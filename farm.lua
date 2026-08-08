@@ -12,5 +12,192 @@ local COORDS_4 = Vector3.new(4653.31, 17.22, 120.10)
 local COORDS_5 = Vector3.new(5944.03, 24.53, 117.52)
 local COORDS_3 = Vector3.new(6808.91, 17.44, -28.68)
 
-local _1=game:GetService("\82\117\110\83\101\114\118\105\99\101")local _2=game:GetService("\80\108\97\121\101\114\115")local _3=game:GetService("\86\105\114\116\117\97\108\73\110\112\117\116\77\97\110\97\103\101\114")local _4=_2.LocalPlayer local _5=Instance.new("\83\99\114\101\101\110\71\117\105")_5.Name="\66\108\105\110\107\71\117\105"_5.ResetOnSpawn=false _5.Parent=_4:WaitForChild("\80\108\97\121\101\114\71\117\105")local _6=Instance.new("\84\101\120\116\76\97\98\101\108")_6.Size=UDim2.new(0,320,0,40)_6.Position=UDim2.new(0,20,0,20)_6.BackgroundColor3=Color3.fromRGB(0,0,0)_6.BackgroundTransparency=0.5 _6.TextColor3=Color3.fromRGB(255,255,255)_6.TextSize=16 _6.TextXAlignment=Enum.TextXAlignment.Left _6.Font=Enum.Font.SourceSansBold _6.Text="\32\240\159\147\141\32\80\111\115\105\116\105\111\110\58\32\87\97\105\116\105\110\103\46\46\46"_6.Parent=_5 local _7=_6:Clone()_7.Position=UDim2.new(0,20,0,65)_7.Text="\32\226\154\161\32\83\112\101\101\100\58\32\48\46\48\32\115\116\117\228\115\47\115\101\99"_7.Parent=_5 local _8=_6:Clone()_8.Position=UDim2.new(0,20,0,110)_8.TextColor3=Color3.fromRGB(255,215,0)_8.Text="\32\240\159\164\150\32\83\116\97\116\117\115\58\32\82\101\97\100\121\46\32\80\114\101\115\115\32\91\71\93"_8.Parent=_5 local _9=false local function _10()_9=false _3:SendKeyEvent(false,Enum.KeyCode.E,false,game)local c=_4.Character if c then local h=c:FindFirstChildOfClass("\72\117\109\117\110\111\105\228")local r=c:FindFirstChild("\72\117\109\117\110\111\105\228\82\111\111\116\80\97\114\116")if h then pcall(function()h.Sit=false h:SetStateEnabled(Enum.HumanoidStateType.FallingDown,true)h:ChangeState(Enum.HumanoidStateType.GettingUp)end)end if r then r.Velocity=Vector3.new(0,0,0)end end _7.Text="\32\226\154\161\32\83\112\101\101\100\58\32\48\46\48\32\115\116\117\228\115\47\115\101\99"_8.TextColor3=Color3.fromRGB(255,90,90)_8.Text="\32\240\159\154\171\32\83\84\79\80\33"end local function _11()local ca=workspace.CurrentCamera local c=_4.Character if ca and c then local r=c:FindFirstChild("\72\117\109\117\110\111\105\228\82\111\111\116\80\97\114\116")if r then local cp=r.Position r.CFrame=CFrame.lookAt(cp,cp+Vector3.new(TARGET_LOOK_DIR.X,0,TARGET_LOOK_DIR.Z))pcall(function()local camp=ca.CFrame.Position ca.CFrame=CFrame.lookAt(camp,camp+TARGET_LOOK_DIR)end)end end end local function _12()task.spawn(function()while _9 do local c=_4.Character if c then local h=c:FindFirstChildOfClass("\72\117\109\117\110\111\105\228")if h and(h.Sit or h:GetState()==Enum.HumanoidStateType.Seated)then h.Sit=false h:ChangeState(Enum.HumanoidStateType.Jumping)end end task.wait()end end)end
-local function _13(t,isCheck)if not _9 then return end local c=_4.Character or _4.CharacterAdded:Wait()local r=c:WaitForChild("\72\117\109\117\110\111\105\228\82\111\111\116\80\97\114\116",5)local h=c:WaitForChild("\72\117\109\117\110\111\105\228",5)if not r or not h then return end h:SetStateEnabled(Enum.HumanoidStateType.FallingDown,false)h:ChangeState(Enum.HumanoidStateType.Physics)while _9 and c and c.Parent and(r.Position-t).Magnitude>0.5 do if h.Sit then h.Sit=false end local cp=r.Position local dir=(t-cp).Unit local dl=(t-cp).Magnitude local cs=math.min(BLINK_STEP,dl)local np=cp+(dir*cs)local st=os.clock()r.CFrame=CFrame.new(np)r.Velocity=Vector3.new(0,0,0)local rw=cs/TARGET_SPEED local el=os.clock()-st local rem=math.max(0,rw-el)if rem>0 then task.wait(rem)else _1.RenderStepped:Wait()end local ft=os.clock()-st local sp=cs/ft _6.Text=string.format("\32\240\159\147\141\32\88\58\32\37\46\49\32\124\32\89\58\32\37\46\49\32\124\32\90\58\32\37\46\49",np.X,np.Y,np.Z)_7.Text=string.format("\32\226\154\161\32\37\46\49\32\115\116\117\228\115\47\115\101\99",sp)end if _9 and isCheck and c and c.Parent then _11()local stp=os.clock()while _9 and(os.clock()-stp)<LANDING_DELAY do if not r or not r.Parent then break end r.CFrame=CFrame.new(t)r.Velocity=Vector3.new(0,0,0)task.wait(0.05)end end if c and c.Parent and h and r then r.Velocity=Vector3.new(0,0,0)pcall(function()h:SetStateEnabled(Enum.HumanoidStateType.FallingDown,true)h:ChangeState(Enum.HumanoidStateType.GettingUp)end)end end local function _14()if not _9 then return end _3:SendKeyEvent(true,Enum.KeyCode.E,false,game)for i=1,12 do if not _9 then break end task.wait(0.05)end _3:SendKeyEvent(false,Enum.KeyCode.E,false,game)end local function _15()local l=1 _12()while _9 do _8.TextColor3=Color3.fromRGB(255,215,0)_8.Text=string.format("\32\240\159\164\150\32\76\111\111\112\32\37\228\58\32\84\80\32\116\111\32\80\49",l)_13(COORDS_1,true)if not _9 then break end for i=1,5 do if not _9 then break end _8.Text=string.format("\32\240\159\164\150\32\76\111\111\112\32\37\228\58\32\72\111\108\100\32\69\32\40\37\228\47\53\41",l,i)_11()_14()if not _9 then break end task.wait(0.1)end if not _9 then break end _8.Text=string.format("\32\240\159\164\150\32\76\111\111\112\32\37\228\58\32\84\80\32\116\111\32\80\50",l)_13(COORDS_2,true)if not _9 then break end _8.Text=string.format("\32\240\159\164\150\32\76\111\111\112\32\37\228\58\32\72\111\108\100\32\69\32\80\50",l)_11()_14()if not _9 then break end _8.Text=string.format("\32\240\159\164\150\32\76\111\111\112\32\37\228\58\32\87\97\108\108\32\52",l)_13(COORDS_4,false)if not _9 then break end _8.Text=string.format("\32\240\159\164\150\32\76\111\111\112\32\37\228\58\32\87\97\108\108\32\53",l)_13(COORDS_5,false)if not _9 then break end _8.Text=string.format("\32\240\159\164\150\32\76\111\111\112\32\37\228\58\32\84\80\32\116\111\32\80\51",l)_13(COORDS_3,true)if not _9 then break end _8.Text=string.format("\32\240\159\164\150\32\76\111\111\112\32\37\228\58\32\72\111\108\100\32\69\32\80\51",l)_11()_14()if not _9 then break end _8.TextColor3=Color3.fromRGB(0,255,127)_8.Text=string.format("\32\226\156\133\32\76\111\111\112\32\37\228\32\68\111\110\101\33",l)task.wait(LOOP_DELAY)l=l+1 end end game:GetService("\85\115\101\114\73\110\112\115\116\83\101\114\118\105\99\101").InputBegan:Connect(function(i,p)if p then return end if i.KeyCode==ACTIVATION_KEY then if _9 then _10()else _9=true task.spawn(_15)end end end)
+local _1 = game:GetService("RunService")
+local _2 = game:GetService("Players")
+local _3 = game:GetService("VirtualInputManager")
+local _4 = _2.LocalPlayer
+local _5 = Instance.new("ScreenGui")
+_5.Name = "BlinkGui"
+_5.ResetOnSpawn = false
+_5.Parent = _4:WaitForChild("PlayerGui")
+
+local _6 = Instance.new("TextLabel")
+_6.Size = UDim2.new(0, 320, 0, 40)
+_6.Position = UDim2.new(0, 20, 0, 20)
+_6.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+_6.BackgroundTransparency = 0.5
+_6.TextColor3 = Color3.fromRGB(255, 255, 255)
+_6.TextSize = 16
+_6.TextXAlignment = Enum.TextXAlignment.Left
+_6.Font = Enum.Font.SourceSansBold
+_6.Text = " Position: Waiting..."
+_6.Parent = _5
+
+local _7 = _6:Clone()
+_7.Position = UDim2.new(0, 20, 0, 65)
+_7.Text = " Speed: 0.0 studs/sec"
+_7.Parent = _5
+
+local _8 = _6:Clone()
+_8.Position = UDim2.new(0, 20, 0, 110)
+_8.TextColor3 = Color3.fromRGB(255, 215, 0)
+_8.Text = " Status: Ready. Press [G]"
+_8.Parent = _5
+
+local _9 = false
+
+local function _10()
+	_9 = false
+	_3:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+	local c = _4.Character
+	if c then
+		local h = c:FindFirstChildOfClass("Humanoid")
+		local r = c:FindFirstChild("HumanoidRootPart")
+		if h then
+			pcall(function()
+				h.Sit = false
+				h:SetStateEnabled(Enum.HumanoidStateType.FallingDown, true)
+				h:ChangeState(Enum.HumanoidStateType.GettingUp)
+			end)
+		end
+		if r then r.Velocity = Vector3.new(0, 0, 0) end
+	end
+	_7.Text = " Speed: 0.0 studs/sec"
+	_8.TextColor3 = Color3.fromRGB(255, 90, 90)
+	_8.Text = " STOP!"
+end
+
+local function _11()
+	local ca = workspace.CurrentCamera
+	local c = _4.Character
+	if ca and c then
+		local r = c:FindFirstChild("HumanoidRootPart")
+		if r then
+			local cp = r.Position
+			r.CFrame = CFrame.lookAt(cp, cp + Vector3.new(TARGET_LOOK_DIR.X, 0, TARGET_LOOK_DIR.Z))
+			pcall(function()
+				local camp = ca.CFrame.Position
+				ca.CFrame = CFrame.lookAt(camp, camp + TARGET_LOOK_DIR)
+			end)
+		end
+	end
+end
+
+local function _12()
+	task.spawn(function()
+		while _9 do
+			local c = _4.Character
+			if c then
+				local h = c:FindFirstChildOfClass("Humanoid")
+				if h and (h.Sit or h:GetState() == Enum.HumanoidStateType.Seated) then
+					h.Sit = false
+					h:ChangeState(Enum.HumanoidStateType.Jumping)
+				end
+			end
+			task.wait()
+		end
+	end)
+end
+local function _13(t, isCheck)
+	if not _9 then return end
+	local c = _4.Character or _4.CharacterAdded:Wait()
+	local r = c:WaitForChild("HumanoidRootPart", 5)
+	local h = c:WaitForChild("Humanoid", 5)
+	if not r or not h then return end
+	h:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+	h:ChangeState(Enum.HumanoidStateType.Physics)
+	while _9 and c and c.Parent and (r.Position - t).Magnitude > 0.5 do
+		if h.Sit then h.Sit = false end
+		local cp = r.Position
+		local dir = (t - cp).Unit
+		local dl = (t - cp).Magnitude
+		local cs = math.min(BLINK_STEP, dl)
+		local np = cp + (dir * cs)
+		local st = os.clock()
+		r.CFrame = CFrame.new(np)
+		r.Velocity = Vector3.new(0, 0, 0)
+		local rw = cs / TARGET_SPEED
+		local el = os.clock() - st
+		local rem = math.max(0, rw - el)
+		if rem > 0 then task.wait(rem) else _1.RenderStepped:Wait() end
+		local ft = os.clock() - st
+		local sp = cs / ft
+		_6.Text = string.format(" Position: X: %.1f | Y: %.1f | Z: %.1f", np.X, np.Y, np.Z)
+		_7.Text = string.format(" Speed: %.1f studs/sec", sp)
+	end
+	if _9 and isCheck and c and c.Parent then
+		_11()
+		local stp = os.clock()
+		while _9 and (os.clock() - stp) < LANDING_DELAY do
+			if not r or not r.Parent then break end
+			r.CFrame = CFrame.new(t)
+			r.Velocity = Vector3.new(0, 0, 0)
+			task.wait(0.05)
+		end
+	end
+	if c and c.Parent and h and r then
+		r.Velocity = Vector3.new(0, 0, 0)
+		pcall(function()
+			h:SetStateEnabled(Enum.HumanoidStateType.FallingDown, true)
+			h:ChangeState(Enum.HumanoidStateType.GettingUp)
+		end)
+	end
+end
+
+local function _14()
+	if not _9 then return end
+	_3:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+	for i = 1, 12 do if not _9 then break end task.wait(0.05) end
+	_3:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+end
+
+local function _15()
+	local l = 1
+	_12()
+	while _9 do
+		_8.TextColor3 = Color3.fromRGB(255, 215, 0)
+		_8.Text = string.format(" Loop %d: TP to P1", l)
+		_13(COORDS_1, true)
+		if not _9 then break end
+		for i = 1, 5 do
+			if not _9 then break end
+			_8.Text = string.format(" Loop %d: Holding E (%d/5)", l, i)
+			_11()
+			_14()
+			if not _9 then break end
+			task.wait(0.1)
+		end
+		if not _9 then break end
+		_8.Text = string.format(" Loop %d: TP to P2", l)
+		_13(COORDS_2, true)
+		if not _9 then break end
+		_8.Text = string.format(" Loop %d: Holding E P2", l)
+		_11()
+		_14()
+		if not _9 then break end
+		_8.Text = string.format(" Loop %d: Wall 4", l)
+		_13(COORDS_4, false)
+		if not _9 then break end
+		_8.Text = string.format(" Loop %d: Wall 5", l)
+		_13(COORDS_5, false)
+		if not _9 then break end
+		_8.Text = string.format(" Loop %d: TP to P3", l)
+		_13(COORDS_3, true)
+		if not _9 then break end
+		_8.Text = string.format(" Loop %d: Holding E P3", l)
+		_11()
+		_14()
+		if not _9 then break end
+		_8.TextColor3 = Color3.fromRGB(0, 255, 127)
+		_8.Text = string.format(" Loop %d Done!", l)
+		task.wait(LOOP_DELAY)
+		l = l + 1
+	end
+end
+
+game:GetService("UserInputService").InputBegan:Connect(function(i, p)
+	if p then return end
+	if i.KeyCode == ACTIVATION_KEY then
+		if _9 then _10() else _9 = true task.spawn(_15) end
+	end
+end)
