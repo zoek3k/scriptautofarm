@@ -3,6 +3,7 @@ local TARGET_SPEED = 220
 local BLINK_STEP = 12
 local LANDING_DELAY = 1.0
 local LOOP_DELAY = 0.2
+local STUCK_LIMIT = 300
 
 local TARGET_LOOK_DIR = Vector3.new(-0.679, -0.215, -0.702)
 
@@ -23,29 +24,38 @@ screenGui.ResetOnSpawn = false
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
 local coordsLabel = Instance.new("TextLabel")
-coordsLabel.Size = UDim2.new(0, 320, 0, 40)
+coordsLabel.Size = UDim2.new(0, 320, 0, 35)
 coordsLabel.Position = UDim2.new(0, 20, 0, 20)
 coordsLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 coordsLabel.BackgroundTransparency = 0.5
 coordsLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-coordsLabel.TextSize = 16
+coordsLabel.TextSize = 15
 coordsLabel.TextXAlignment = Enum.TextXAlignment.Left
 coordsLabel.Font = Enum.Font.SourceSansBold
 coordsLabel.Text = " Position: Waiting..."
 coordsLabel.Parent = screenGui
 
 local speedLabel = coordsLabel:Clone()
-speedLabel.Position = UDim2.new(0, 20, 0, 65)
+speedLabel.Position = UDim2.new(0, 20, 0, 60)
 speedLabel.Text = " Speed: 0.0 studs/sec"
 speedLabel.Parent = screenGui
 
+local statsLabel = coordsLabel:Clone()
+statsLabel.Position = UDim2.new(0, 20, 0, 100)
+statsLabel.TextColor3 = Color3.fromRGB(0, 255, 255)
+statsLabel.Text = " Loops: 0 | Time: 00:00:00"
+statsLabel.Parent = screenGui
+
 local statusLabel = coordsLabel:Clone()
-statusLabel.Position = UDim2.new(0, 20, 0, 110)
+statusLabel.Position = UDim2.new(0, 20, 0, 140)
 statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
 statusLabel.Text = " Status: Ready. Press [G]"
 statusLabel.Parent = screenGui
 
 local isRunning = false
+local startTime = 0
+local totalLoops = 0
+local lastProgressTime = 0
 
 local function resetAndStop()
 	isRunning = false
@@ -84,7 +94,7 @@ local function snapCameraToTarget()
 	end
 end
 
-local function startAntiSitMonitor()
+local function startBackgroundThreads()
 	task.spawn(function()
 		while isRunning do
 			local character = player.Character
@@ -96,6 +106,32 @@ local function startAntiSitMonitor()
 				end
 			end
 			task.wait()
+		end
+	end)
+
+	task.spawn(function()
+		while isRunning do
+			local elapsed = os.time() - startTime
+			local hours = math.floor(elapsed / 3600)
+			local minutes = math.floor((elapsed % 3600) / 60)
+			local seconds = elapsed % 60
+			statsLabel.Text = string.format(" Loops: %d | Time: %02d:%02d:%02d", totalLoops, hours, minutes, seconds)
+			
+			if os.time() - lastProgressTime >= STUCK_LIMIT then
+				lastProgressTime = os.time()
+				local character = player.Character
+				if character then
+					local humanoid = character:FindFirstChildOfClass("Humanoid")
+					if humanoid then
+						statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
+						statusLabel.Text = " Stuck detected! Resetting..."
+						humanoid.Health = 0
+						player.CharacterAdded:Wait()
+						task.wait(1.0)
+					end
+				end
+			end
+			task.wait(1)
 		end
 	end)
 end
@@ -165,17 +201,20 @@ local function holdE()
 end
 
 local function runMacroSequence()
-	local loopCount = 1
-	startAntiSitMonitor()
+	startTime = os.time()
+	lastProgressTime = os.time()
+	totalLoops = 0
+	startBackgroundThreads()
+	
 	while isRunning do
 		statusLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
-		statusLabel.Text = string.format(" Loop %d: TP to P1", loopCount)
+		statusLabel.Text = string.format(" Loop %d: TP to P1", totalLoops + 1)
 		blinkTo(COORDS_1, true)
 		if not isRunning then break end
 		
 		for i = 1, 5 do
 			if not isRunning then break end
-			statusLabel.Text = string.format(" Loop %d: Holding E (%d/5)", loopCount, i)
+			statusLabel.Text = string.format(" Loop %d: Holding E (%d/5)", totalLoops + 1, i)
 			snapCameraToTarget()
 			holdE()
 			if not isRunning then break end
@@ -183,36 +222,37 @@ local function runMacroSequence()
 		end
 		if not isRunning then break end
 		
-		statusLabel.Text = string.format(" Loop %d: TP to P2", loopCount)
+		statusLabel.Text = string.format(" Loop %d: TP to P2", totalLoops + 1)
 		blinkTo(COORDS_2, true)
 		if not isRunning then break end
 		
-		statusLabel.Text = string.format(" Loop %d: Holding E P2", loopCount)
+		statusLabel.Text = string.format(" Loop %d: Holding E P2", totalLoops + 1)
 		snapCameraToTarget()
 		holdE()
 		if not isRunning then break end
 		
-		statusLabel.Text = string.format(" Loop %d: Wall 4", loopCount)
+		statusLabel.Text = string.format(" Loop %d: Wall 4", totalLoops + 1)
 		blinkTo(COORDS_4, false)
 		if not isRunning then break end
 		
-		statusLabel.Text = string.format(" Loop %d: Wall 5", loopCount)
+		statusLabel.Text = string.format(" Loop %d: Wall 5", totalLoops + 1)
 		blinkTo(COORDS_5, false)
 		if not isRunning then break end
 		
-		statusLabel.Text = string.format(" Loop %d: TP to P3", loopCount)
+		statusLabel.Text = string.format(" Loop %d: TP to P3", totalLoops + 1)
 		blinkTo(COORDS_3, true)
 		if not isRunning then break end
 		
-		statusLabel.Text = string.format(" Loop %d: Holding E P3", loopCount)
+		statusLabel.Text = string.format(" Loop %d: Holding E P3", totalLoops + 1)
 		snapCameraToTarget()
 		holdE()
 		if not isRunning then break end
 		
+		totalLoops = totalLoops + 1
+		lastProgressTime = os.time()
 		statusLabel.TextColor3 = Color3.fromRGB(0, 255, 127)
-		statusLabel.Text = string.format(" Loop %d Done!", loopCount)
+		statusLabel.Text = string.format(" Loop %d Done!", totalLoops)
 		task.wait(LOOP_DELAY)
-		loopCount = loopCount + 1
 	end
 end
 
