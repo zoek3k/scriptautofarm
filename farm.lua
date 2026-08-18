@@ -1,5 +1,5 @@
 local ACTIVATION_KEY = Enum.KeyCode.G
-local TARGET_SPEED = 220
+local TARGET_SPEED = 200
 local BLINK_STEP = 12
 local LANDING_DELAY = 1.0
 local LOOP_DELAY = 0.2
