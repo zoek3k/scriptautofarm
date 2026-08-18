@@ -7,7 +7,7 @@ local STUCK_LIMIT = 300
 
 local TARGET_LOOK_DIR = Vector3.new(-0.679, -0.215, -0.702)
 
-local COORDS_1 = Vector3.new(6820.83, 17.42, 21.85)
+local COORDS_1 = Vector3.new(6809.04, 17.76, 23.76)
 local COORDS_2 = Vector3.new(-81.57, 49.25, 432.51)
 local COORDS_4 = Vector3.new(4653.31, 17.22, 120.10)
 local COORDS_5 = Vector3.new(5944.03, 24.53, 117.52)
